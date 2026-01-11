@@ -8,6 +8,7 @@ Extensión de Visual Studio Code para dar soporte básico a archivos BBCode con 
 - Registro de idioma `BBCode`/`bbcode` con extensión `.bbcode`.
 - Pares automáticos para corchetes `[]` y comillas dobles, más bracket matching en los documentos.
 - Configuración de lenguaje con soporte para plegado y comentarios estilo `//` o `/* */` cuando sea necesario.
+- Botón de vista previa en la barra del editor para ver el BBCode renderizado en un panel al lado.
 
 ## Requisitos
 
@@ -22,6 +23,7 @@ Extensión de Visual Studio Code para dar soporte básico a archivos BBCode con 
 ## Uso
 
 - Crea o abre un archivo `.bbcode` para activar el resaltado.
+- Presiona el botón **BBCode: Vista previa** en la barra del editor (o usa el comando con el mismo nombre) para abrir el panel de vista previa.
 - Escribe tus etiquetas con atributos; la gramática reconoce aperturas, cierres y asignaciones para facilitar la lectura.
 - Usa los pares automáticos para corchetes y comillas al escribir etiquetas.
 

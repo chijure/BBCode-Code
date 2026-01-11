@@ -5,6 +5,7 @@
   "version": "0.0.1",
   "publisher": "JuanReateguiSolis",
   "license": "MIT",
+  "main": "./extension.js",
   "engines": {
     "vscode": "^1.75.0"
   },
@@ -17,6 +18,10 @@
   ],
   "keywords": [
     "bbcode"
+  ],
+  "activationEvents": [
+    "onLanguage:bbcode",
+    "onCommand:bbcode.preview"
   ],
   "contributes": {
     "languages": [
@@ -38,6 +43,22 @@
         "scopeName": "source.bbcode",
         "path": "./syntaxes/bbcode.tmLanguage.json"
       }
-    ]
+    ],
+    "commands": [
+      {
+        "command": "bbcode.preview",
+        "title": "BBCode: Vista previa",
+        "category": "BBCode"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "bbcode.preview",
+          "group": "navigation",
+          "when": "editorLangId == bbcode"
+        }
+      ]
+    }
   }
 }
