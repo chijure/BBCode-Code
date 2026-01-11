@@ -1,0 +1,43 @@
+{
+  "name": "bbcode-support",
+  "displayName": "BBCode",
+  "description": "Extensión de Visual Studio Code para dar soporte básico a archivos BBCode con resaltado de sintaxis y pares de caracteres automáticos.",
+  "version": "0.0.1",
+  "publisher": "JuanReateguiSolis",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chijure/BBCode-Code.git"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "keywords": [
+    "bbcode"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "bbcode",
+        "aliases": [
+          "BBCode",
+          "bbcode"
+        ],
+        "extensions": [
+          ".bbcode"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "bbcode",
+        "scopeName": "source.bbcode",
+        "path": "./syntaxes/bbcode.tmLanguage.json"
+      }
+    ]
+  }
+}
