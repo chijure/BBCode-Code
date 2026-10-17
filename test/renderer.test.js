@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert');
-const { bbcodeToHtml } = require('../bbcode-renderer');
+const { bbcodeToHtml, diagnose, openTagsAt } = require('../bbcode-renderer');
 
 test('atributos con comillas dobles, simples y sin comillas', () => {
   assert.strictEqual(bbcodeToHtml('[SIZE="4"]a[/SIZE]'), '<span style="font-size:15px">a</span>');
@@ -55,4 +55,24 @@ test('spoiler con título, mention y tabla', () => {
 test('bloquea URLs javascript y escapa HTML', () => {
   assert.strictEqual(bbcodeToHtml('[URL="javascript:alert(1)"]x[/URL]'), 'x');
   assert.strictEqual(bbcodeToHtml('<script>'), '&lt;script&gt;');
+});
+
+test('diagnose: etiqueta sin cerrar, cierre huérfano y anidamiento cruzado', () => {
+  const messages = (text) => diagnose(text).map((i) => i.message);
+  assert.deepStrictEqual(diagnose('[B]ok[/B] [ROM][UNOFFICIAL]'), []);
+  assert.deepStrictEqual(messages('x [B]a'), ['[B] no se cerró: falta [/B].']);
+  assert.deepStrictEqual(diagnose('x [B]a')[0], { start: 2, end: 5, message: '[B] no se cerró: falta [/B].' });
+  assert.deepStrictEqual(messages('a[/LIST]'), ['[/LIST] no tiene una etiqueta de apertura.']);
+  assert.deepStrictEqual(messages('[SIZE=5][CENTER]a[/SIZE]b[/CENTER]'), [
+    'Anidamiento cruzado: [/SIZE] se cierra mientras [CENTER] sigue abierta.'
+  ]);
+  assert.deepStrictEqual(messages('[*] suelto'), ['[*] está fuera de una lista ([LIST]).']);
+  assert.deepStrictEqual(messages('[CODE]x'), ['[CODE] no se cerró: falta [/CODE].']);
+});
+
+test('openTagsAt: etiquetas abiertas para autocerrar', () => {
+  assert.deepStrictEqual(openTagsAt('[CENTER][B]x[/B][SIZE=4][color=Red]a'), ['CENTER', 'SIZE', 'color']);
+  assert.deepStrictEqual(openTagsAt('[LIST][*][B]a'), ['LIST', 'B']);
+  assert.deepStrictEqual(openTagsAt('[QUOTE][CODE]x [B]y'), ['QUOTE', 'CODE']);
+  assert.deepStrictEqual(openTagsAt('[B]a[/B]'), []);
 });

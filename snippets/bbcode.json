@@ -1,0 +1,117 @@
+{
+  "XDA: encabezado de post": {
+    "prefix": "xda-header",
+    "description": "Título grande centrado con dos colores, subtítulo y dispositivos",
+    "body": [
+      "[CENTER][B][SIZE=\"7\"][COLOR=\"DeepSkyBlue\"]${1:Phoenix}[/COLOR] [COLOR=\"Red\"]${2:Kernel}[/COLOR][/SIZE][/B]",
+      "${3:Phoenix Kernel for LG Optimus L1 II}",
+      "[B]${4:E410-E411}[/B][/CENTER]",
+      "",
+      "$0"
+    ]
+  },
+  "XDA: sección": {
+    "prefix": "xda-section",
+    "description": "Título de sección en negrita, tamaño 4",
+    "body": [
+      "[B][SIZE=\"4\"]${1:Sección}[/SIZE][/B]",
+      "$0"
+    ]
+  },
+  "XDA: features": {
+    "prefix": "xda-features",
+    "description": "Cita con la lista de características",
+    "body": [
+      "[QUOTE][COLOR=\"Red\"][B][SIZE=\"3\"]Features[/SIZE][/B][/COLOR]",
+      "[LIST]",
+      "[*][B]${1:Feature}[/B]: ${2:descripción}",
+      "[*]$0",
+      "[/LIST][/QUOTE]"
+    ]
+  },
+  "XDA: requisitos": {
+    "prefix": "xda-requirements",
+    "description": "Lista de requisitos",
+    "body": [
+      "[B][SIZE=\"4\"]The REQUIREMENTS[/SIZE][/B]",
+      "[LIST]",
+      "[*]${1:An unlocked bootloader}",
+      "[*]${2:Custom Recovery CWM/PHILZ/TWRP}",
+      "[*]$0",
+      "[/LIST]"
+    ]
+  },
+  "XDA: instrucciones": {
+    "prefix": "xda-instructions",
+    "description": "Lista numerada de instrucciones de instalación",
+    "body": [
+      "[B][SIZE=\"4\"]The INSTRUCTIONS[/SIZE][/B]",
+      "[LIST=1]",
+      "[*]${1:Copy the zip to your sdcard}",
+      "[*]${2:Boot into recovery}",
+      "[*]${3:Flash the zip}",
+      "[*]${4:Reboot}",
+      "[/LIST]",
+      "$0"
+    ]
+  },
+  "XDA: descargas": {
+    "prefix": "xda-downloads",
+    "description": "Sección de descargas con enlaces",
+    "body": [
+      "[B][SIZE=\"5\"][COLOR=\"Red\"]Downloads[/COLOR][/SIZE][/B]",
+      "[LIST]",
+      "[*][URL=\"${1:https://}\"]${2:Download}[/URL]",
+      "[/LIST]",
+      "$0"
+    ]
+  },
+  "XDA: créditos": {
+    "prefix": "xda-credits",
+    "description": "Lista de créditos con menciones",
+    "body": [
+      "[B][SIZE=\"4\"]Credits[/SIZE][/B]",
+      "[LIST]",
+      "[*][URL=\"https://xdaforums.com/member.php?u=${1:id}\"]${2:usuario}[/URL]: ${3:contribución}",
+      "[/LIST]",
+      "$0"
+    ]
+  },
+  "XDA: DevDB information": {
+    "prefix": "xda-devdb",
+    "description": "Bloque XDA:DevDB Information al final del post",
+    "body": [
+      "[B][U][SIZE=\"4\"][PLAIN]XDA:DevDB Information[/PLAIN][/SIZE][/U][/B]",
+      "[SIZE=3][B]${1:Nombre}, ${2:Kernel} for the ${3:dispositivo}[/B][/SIZE]",
+      "",
+      "[B][U]Contributors[/U][/B]",
+      "[URL=\"https://xdaforums.com/member.php?u=${4:5782200}\"]${5:chijure}[/URL]",
+      "[B]Source Code:[/B] [URL]${6:https://github.com/}[/URL]",
+      "",
+      "[B][U]Version Information[/U][/B]",
+      "[B]Status:[/B] ${7|Stable,Beta,Alpha,Testing|}",
+      "",
+      "[B]Created[/B] ${CURRENT_YEAR}-${CURRENT_MONTH}-${CURRENT_DATE}",
+      "$0"
+    ]
+  },
+  "XDA: spoiler": {
+    "prefix": "xda-spoiler",
+    "description": "Spoiler con título",
+    "body": [
+      "[SPOILER=\"${1:Título}\"]",
+      "$0",
+      "[/SPOILER]"
+    ]
+  },
+  "XDA: capturas": {
+    "prefix": "xda-screenshots",
+    "description": "Spoiler con imágenes de capturas",
+    "body": [
+      "[SPOILER=\"Screenshots\"]",
+      "[IMG]${1:https://}[/IMG]",
+      "$0",
+      "[/SPOILER]"
+    ]
+  }
+}

@@ -74,8 +74,21 @@ function parseOptions(rest) {
  * Convierte el texto BBCode en un árbol de nodos.
  */
 function parse(src) {
+  return parseDocument(src).root;
+}
+
+/**
+ * Parsea el texto y además devuelve los problemas encontrados (con offsets sobre
+ * `src`) y las etiquetas que quedan abiertas al final.
+ * @returns {{ root: object, issues: Array<{ start: number, end: number, message: string }>, openTags: object[] }}
+ */
+function parseDocument(src) {
   const root = { type: 'tag', name: '#root', children: [] };
   const stack = [root];
+  const issues = [];
+  let unclosedRaw = null;
+  const report = (start, end, message) => issues.push({ start, end, message });
+  const label = (n) => `[${n.rawName}]`;
   const top = () => stack[stack.length - 1];
   const append = (node) => top().children.push(node);
   const pushText = (text) => {
@@ -86,7 +99,7 @@ function parse(src) {
     else children.push({ type: 'text', value: text });
   };
   const reopen = (nodes) => nodes.forEach((n) => {
-    const clone = { type: 'tag', name: n.name, option: n.option, attrs: n.attrs, children: [] };
+    const clone = { ...n, children: [] };
     append(clone);
     stack.push(clone);
   });
@@ -98,8 +111,10 @@ function parse(src) {
     const [full, slash, rawName, rest = ''] = match;
     const name = rawName.toLowerCase();
     const def = TAGS[name];
-    pushText(src.slice(pos, match.index));
-    pos = match.index + full.length;
+    const start = match.index;
+    const end = start + full.length;
+    pushText(src.slice(pos, start));
+    pos = end;
 
     if (!def) {
       pushText(full);
@@ -110,14 +125,22 @@ function parse(src) {
       let i = stack.length - 1;
       while (i > 0 && stack[i].name !== name) i--;
       if (rest || i === 0) {
+        report(start, end, `[/${rawName}] no tiene una etiqueta de apertura.`);
         pushText(full);
         continue;
       }
       // Anidamiento cruzado ([SIZE][CENTER]x[/SIZE]y[/CENTER]): se cierran las
       // etiquetas internas y se reabren después, como hacen los navegadores.
-      const crossed = stack.slice(i + 1).filter((n) => !STRUCTURAL_TAGS.has(n.name));
+      const inner = stack.slice(i + 1);
+      inner.forEach((n) => {
+        if (n.name === '*') return;
+        const message = STRUCTURAL_TAGS.has(n.name)
+          ? `${label(n)} no se cerró antes de [/${rawName}].`
+          : `Anidamiento cruzado: [/${rawName}] se cierra mientras ${label(n)} sigue abierta.`;
+        report(start, end, message);
+      });
       stack.length = i;
-      reopen(crossed);
+      reopen(inner.filter((n) => !STRUCTURAL_TAGS.has(n.name)));
       continue;
     }
 
@@ -125,13 +148,14 @@ function parse(src) {
       let j = stack.length - 1;
       while (j > 0 && stack[j].name !== '*' && !LIST_TAGS.has(stack[j].name)) j--;
       if (j === 0) {
+        report(start, end, '[*] está fuera de una lista ([LIST]).');
         pushText(full);
         continue;
       }
       // Las etiquetas abiertas en el item anterior ([COLOR][*]a[*]b[/COLOR]) continúan en el nuevo.
       const carried = stack.slice(j + 1).filter((n) => !STRUCTURAL_TAGS.has(n.name));
       stack.length = stack[j].name === '*' ? j : j + 1;
-      const item = { type: 'tag', name, option: '', attrs: {}, children: [] };
+      const item = { type: 'tag', name, rawName, start, end, option: '', attrs: {}, children: [] };
       append(item);
       stack.push(item);
       reopen(carried);
@@ -139,13 +163,15 @@ function parse(src) {
     }
 
     const { option, attrs } = parseOptions(rest);
-    const node = { type: 'tag', name, option, attrs, children: [] };
+    const node = { type: 'tag', name, rawName, start, end, option, attrs, children: [] };
     const isRaw = typeof def.raw === 'function' ? def.raw(option) : def.raw;
 
     if (isRaw) {
       const closeRe = new RegExp(`\\[/${escapeRegExp(rawName)}\\]`, 'i');
       const closeMatch = closeRe.exec(src.slice(pos));
       if (!closeMatch) {
+        report(start, end, `${label(node)} no se cerró: falta [/${rawName}].`);
+        if (!unclosedRaw) unclosedRaw = { node, depth: stack.length };
         pushText(full);
         continue;
       }
@@ -160,7 +186,33 @@ function parse(src) {
     if (!def.isVoid) stack.push(node);
   }
   pushText(src.slice(pos));
-  return root;
+
+  stack.slice(1).forEach((n) => {
+    if (n.name !== '*') report(n.start, n.end, `${label(n)} no se cerró: falta [/${n.rawName}].`);
+  });
+  // Dentro de un [CODE] sin cerrar, lo que sigue no son etiquetas: la abierta es el [CODE].
+  const openTags = unclosedRaw
+    ? stack.slice(1, unclosedRaw.depth).concat(unclosedRaw.node)
+    : stack.slice(1);
+  return { root, issues, openTags };
+}
+
+/**
+ * Problemas del documento (etiquetas sin cerrar, cierres huérfanos, anidamiento cruzado...).
+ * Los offsets se refieren al texto recibido, sin normalizar.
+ */
+function diagnose(text) {
+  return parseDocument(String(text || '')).issues;
+}
+
+/**
+ * Etiquetas abiertas al final de `textBefore`, de la más externa a la más interna
+ * (sin contar los [*]). Sirve para autocompletar el cierre.
+ */
+function openTagsAt(textBefore) {
+  return parseDocument(String(textBefore || '')).openTags
+    .filter((n) => n.name !== '*')
+    .map((n) => n.rawName);
 }
 
 // ---------------------------------------------------------------------------
@@ -414,4 +466,4 @@ function bbcodeToHtml(text, options = {}) {
   return renderNodes(parse(source).children, ctx);
 }
 
-module.exports = { bbcodeToHtml, parse };
+module.exports = { bbcodeToHtml, parse, diagnose, openTagsAt, TAGS };

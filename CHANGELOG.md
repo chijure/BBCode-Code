@@ -6,6 +6,16 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.2.0]
+- Avisos (diagnósticos) de etiquetas sin cerrar, cierres sin apertura, anidamientos cruzados y `[*]` fuera de listas. Ajuste `bbcode.validate`.
+- Autocierre de la última etiqueta abierta al escribir `[/`. Ajuste `bbcode.autoCloseTags`.
+- Atajos `Cmd/Ctrl+B`, `Cmd/Ctrl+I`, `Cmd/Ctrl+U` (ponen o quitan la etiqueta) y `Cmd/Ctrl+Alt+K` (enlace).
+- Autocompletado de etiquetas al escribir `[`, con opciones para color, tamaño, listas y código.
+- Snippets de plantillas de XDA (`xda-header`, `xda-devdb`, `xda-instructions`...).
+- Ajuste `bbcode.tagCase` para insertar etiquetas en mayúsculas o minúsculas.
+- Se quitan los comentarios `//` de la configuración del lenguaje (BBCode no tiene comentarios).
+- CI en GitHub Actions: tests en cada push y publicación automática al crear un tag `vX.Y.Z`.
+
 ## [1.1.0]
 - Nuevo renderer basado en un parser con pila (`bbcode-renderer.js`), compatible con el BBCode de XenForo/XDA.
 - Soporte de atributos entre comillas, `[SIZE]` en escala 1–7, `[LIST=1]`, listas anidadas, `[PLAIN]`, `[MENTION]`, `[FONT]`, `[SPOILER="título"]`, `[INDENT]`, `[HEADING]`, `[MEDIA]`, `[EMAIL]`, `[ICODE]` y más.

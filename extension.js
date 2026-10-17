@@ -1,6 +1,7 @@
 const vscode = require('vscode');
 const path = require('path');
 const { bbcodeToHtml } = require('./bbcode-renderer');
+const { registerEditorFeatures } = require('./editor-features');
 
 const UPDATE_DELAY_MS = 150;
 
@@ -199,6 +200,7 @@ function activate(context) {
   });
 
   context.subscriptions.push(previewCommand, manager);
+  registerEditorFeatures(context);
 }
 
 function deactivate() {}

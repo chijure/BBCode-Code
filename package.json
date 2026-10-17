@@ -1,8 +1,8 @@
 {
   "name": "bbcode-support",
   "displayName": "BBCode",
-  "description": "Extensión de Visual Studio Code para dar soporte básico a archivos BBCode con resaltado de sintaxis y pares de caracteres automáticos.",
-  "version": "1.1.0",
+  "description": "Soporte BBCode para VS Code: vista previa compatible con XDA/XenForo y phpBB, avisos de etiquetas mal cerradas, autocompletado, atajos de formato y snippets.",
+  "version": "1.2.0",
   "publisher": "JuanReateguiSolis",
   "license": "MIT",
   "main": "./extension.js",
@@ -29,7 +29,10 @@
     "phpbb",
     "vbulletin",
     "preview",
-    "renderer"
+    "renderer",
+    "xda",
+    "xenforo",
+    "snippets"
   ],
   "activationEvents": [
     "onLanguage:bbcode",
@@ -62,6 +65,16 @@
         "title": "BBCode: Vista previa",
         "category": "BBCode",
         "icon": "$(open-preview)"
+      },
+      {
+        "command": "bbcode.toggleTag",
+        "title": "Alternar etiqueta",
+        "category": "BBCode"
+      },
+      {
+        "command": "bbcode.insertLink",
+        "title": "Insertar enlace",
+        "category": "BBCode"
       }
     ],
     "menus": {
@@ -80,6 +93,31 @@
           "type": "string",
           "default": "https://xdaforums.com/member.php?u={id}",
           "markdownDescription": "URL usada para `[MENTION=id]` y `[USER=id]`. `{id}` se reemplaza por el id del usuario. Vacío para no generar enlaces."
+        },
+        "bbcode.validate": {
+          "type": "boolean",
+          "default": true,
+          "description": "Muestra avisos de etiquetas sin cerrar, cierres sin apertura y anidamientos cruzados."
+        },
+        "bbcode.autoCloseTags": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Al escribir `[/` completa automáticamente el cierre de la última etiqueta abierta."
+        },
+        "bbcode.tagCase": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "upper",
+            "lower"
+          ],
+          "default": "auto",
+          "enumDescriptions": [
+            "Usa el estilo que predomina en el documento (mayúsculas si no hay etiquetas).",
+            "Siempre en mayúsculas, como XDA: [B].",
+            "Siempre en minúsculas, como phpBB: [b]."
+          ],
+          "description": "Mayúsculas o minúsculas en las etiquetas que inserta la extensión."
         }
       }
     },
@@ -89,6 +127,45 @@
         "key": "ctrl+k v",
         "mac": "cmd+k v",
         "when": "editorLangId == bbcode"
+      },
+      {
+        "command": "bbcode.toggleTag",
+        "args": {
+          "tag": "B"
+        },
+        "key": "ctrl+b",
+        "mac": "cmd+b",
+        "when": "editorTextFocus && editorLangId == bbcode"
+      },
+      {
+        "command": "bbcode.toggleTag",
+        "args": {
+          "tag": "I"
+        },
+        "key": "ctrl+i",
+        "mac": "cmd+i",
+        "when": "editorTextFocus && editorLangId == bbcode"
+      },
+      {
+        "command": "bbcode.toggleTag",
+        "args": {
+          "tag": "U"
+        },
+        "key": "ctrl+u",
+        "mac": "cmd+u",
+        "when": "editorTextFocus && editorLangId == bbcode"
+      },
+      {
+        "command": "bbcode.insertLink",
+        "key": "ctrl+alt+k",
+        "mac": "cmd+alt+k",
+        "when": "editorTextFocus && editorLangId == bbcode"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "bbcode",
+        "path": "./snippets/bbcode.json"
       }
     ]
   },

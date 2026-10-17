@@ -1,13 +1,12 @@
 # bbcode
 
-Extensión de Visual Studio Code para dar soporte básico a archivos BBCode con resaltado de sintaxis y pares de caracteres automáticos.
+Soporte BBCode para VS Code: vista previa compatible con XDA/XenForo y phpBB, avisos de etiquetas mal cerradas, autocompletado, atajos de formato y snippets.
 
 ## Características
 
 - Resaltado de etiquetas BBCode, atributos y cierres usando el grammar `source.bbcode`.
 - Registro de idioma `BBCode`/`bbcode` con extensión `.bbcode`.
 - Pares automáticos para corchetes `[]` y comillas dobles, más bracket matching en los documentos.
-- Configuración de lenguaje con soporte para plegado y comentarios estilo `//` o `/* */` cuando sea necesario.
 - Vista previa en un panel lateral (botón en la barra del editor o `Ctrl/Cmd+K V`) que se actualiza mientras escribes y sigue al archivo `.bbcode` activo.
 - Renderer compatible con el dialecto de XenForo/XDA:
   - Texto: `[B]`, `[I]`, `[U]`, `[S]`, `[SUB]`, `[SUP]`, `[COLOR]`, `[SIZE]` (escala 1–7), `[FONT]`, `[HIGHLIGHT]`.
@@ -17,6 +16,23 @@ Extensión de Visual Studio Code para dar soporte básico a archivos BBCode con 
   - Enlaces y medios: `[URL]`, `[EMAIL]`, `[IMG]` (también rutas relativas al archivo), `[MEDIA=youtube]`, `[YOUTUBE]`, `[MENTION]`, `[USER]`, `[ATTACH]`, autoenlazado de URLs.
   - Código: `[CODE]`, `[CODE=lang]`, `[PHP]`, `[HTML]`, `[ICODE]`, `[PLAIN]`.
   - Atributos con o sin comillas (`[SIZE="4"]`, `[URL='...']`), etiquetas desconocidas como texto y corrección de anidamientos cruzados.
+
+### Escritura
+
+- **Avisos de errores**: subraya las etiquetas sin cerrar, los cierres sin apertura (`[/LIST]` de más), los anidamientos cruzados (`[SIZE][CENTER]…[/SIZE]`) y los `[*]` fuera de una lista.
+- **Autocierre**: al escribir `[/` se completa la última etiqueta abierta.
+- **Atajos de formato** (sobre la selección; si ya tiene la etiqueta, la quita):
+
+  | Atajo | Acción |
+  | --- | --- |
+  | `Cmd/Ctrl+B` | `[B]…[/B]` |
+  | `Cmd/Ctrl+I` | `[I]…[/I]` |
+  | `Cmd/Ctrl+U` | `[U]…[/U]` |
+  | `Cmd/Ctrl+Alt+K` | `[URL=…]…[/URL]` |
+  | `Cmd/Ctrl+K V` | Vista previa |
+
+- **Autocompletado**: al escribir `[` se sugieren las etiquetas con sus opciones (colores, tamaños 1–7, tipos de lista, lenguajes de código...).
+- **Snippets de XDA**: escribe `xda-` para ver las plantillas: `xda-header`, `xda-section`, `xda-features`, `xda-requirements`, `xda-instructions`, `xda-downloads`, `xda-credits`, `xda-devdb`, `xda-spoiler`, `xda-screenshots`.
 
 ## Requisitos
 
@@ -37,6 +53,9 @@ Extensión de Visual Studio Code para dar soporte básico a archivos BBCode con 
 
 ## Configuración de la extensión
 
+- `bbcode.validate` (`true`): muestra los avisos de etiquetas mal cerradas.
+- `bbcode.autoCloseTags` (`true`): completa el cierre al escribir `[/`.
+- `bbcode.tagCase` (`auto`): mayúsculas (`upper`, estilo XDA) o minúsculas (`lower`, estilo phpBB) en las etiquetas que inserta la extensión; `auto` usa el estilo que predomina en el documento.
 - `bbcode.preview.mentionUrl`: URL para `[MENTION=id]`/`[USER=id]` (`{id}` se reemplaza). Por defecto apunta a los perfiles de XDA.
 
 ## Problemas conocidos
@@ -44,6 +63,10 @@ Extensión de Visual Studio Code para dar soporte básico a archivos BBCode con 
 - No se han reportado problemas todavía. Si encuentras algo, abre un issue en el repositorio.
 
 ## Notas de versión
+
+### 1.2.0
+
+Avisos de etiquetas mal cerradas, autocierre con `[/`, atajos `Cmd+B/I/U`, autocompletado de etiquetas y snippets de XDA.
 
 ### 1.1.0
 
