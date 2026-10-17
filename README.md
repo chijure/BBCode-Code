@@ -8,7 +8,15 @@ Extensión de Visual Studio Code para dar soporte básico a archivos BBCode con 
 - Registro de idioma `BBCode`/`bbcode` con extensión `.bbcode`.
 - Pares automáticos para corchetes `[]` y comillas dobles, más bracket matching en los documentos.
 - Configuración de lenguaje con soporte para plegado y comentarios estilo `//` o `/* */` cuando sea necesario.
-- Botón de vista previa en la barra del editor para ver el BBCode renderizado en un panel al lado.
+- Vista previa en un panel lateral (botón en la barra del editor o `Ctrl/Cmd+K V`) que se actualiza mientras escribes y sigue al archivo `.bbcode` activo.
+- Renderer compatible con el dialecto de XenForo/XDA:
+  - Texto: `[B]`, `[I]`, `[U]`, `[S]`, `[SUB]`, `[SUP]`, `[COLOR]`, `[SIZE]` (escala 1–7), `[FONT]`, `[HIGHLIGHT]`.
+  - Bloques: `[CENTER]`, `[LEFT]`, `[RIGHT]`, `[JUSTIFY]`, `[INDENT]`, `[HEADING]`, `[HR]`, `[QUOTE]` (con autor), `[SPOILER]` (con título), `[ISPOILER]`.
+  - Listas: `[LIST]`, `[LIST=1]`, `[LIST=a]`, `[*]`, `[UL]`, `[OL]`, `[LI]`, con anidamiento.
+  - Tablas: `[TABLE]`, `[TR]`, `[TD]`, `[TH]`.
+  - Enlaces y medios: `[URL]`, `[EMAIL]`, `[IMG]` (también rutas relativas al archivo), `[MEDIA=youtube]`, `[YOUTUBE]`, `[MENTION]`, `[USER]`, `[ATTACH]`, autoenlazado de URLs.
+  - Código: `[CODE]`, `[CODE=lang]`, `[PHP]`, `[HTML]`, `[ICODE]`, `[PLAIN]`.
+  - Atributos con o sin comillas (`[SIZE="4"]`, `[URL='...']`), etiquetas desconocidas como texto y corrección de anidamientos cruzados.
 
 ## Requisitos
 
@@ -29,13 +37,17 @@ Extensión de Visual Studio Code para dar soporte básico a archivos BBCode con 
 
 ## Configuración de la extensión
 
-Por ahora la extensión no expone configuraciones personalizables. Todo funciona con los valores por defecto incluidos.
+- `bbcode.preview.mentionUrl`: URL para `[MENTION=id]`/`[USER=id]` (`{id}` se reemplaza). Por defecto apunta a los perfiles de XDA.
 
 ## Problemas conocidos
 
 - No se han reportado problemas todavía. Si encuentras algo, abre un issue en el repositorio.
 
 ## Notas de versión
+
+### 1.1.0
+
+Nuevo renderer con parser real: soporta el BBCode de XDA (atributos con comillas, `[SIZE]` 1–7, listas anidadas, `[PLAIN]`, `[MENTION]`, `[SPOILER]`, tablas...) y la vista previa sigue al editor activo.
 
 ### 0.0.1
 

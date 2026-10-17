@@ -2,7 +2,7 @@
   "name": "bbcode-support",
   "displayName": "BBCode",
   "description": "Extensión de Visual Studio Code para dar soporte básico a archivos BBCode con resaltado de sintaxis y pares de caracteres automáticos.",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "publisher": "JuanReateguiSolis",
   "license": "MIT",
   "main": "./extension.js",
@@ -60,7 +60,8 @@
       {
         "command": "bbcode.preview",
         "title": "BBCode: Vista previa",
-        "category": "BBCode"
+        "category": "BBCode",
+        "icon": "$(open-preview)"
       }
     ],
     "menus": {
@@ -71,6 +72,27 @@
           "when": "editorLangId == bbcode"
         }
       ]
-    }
+    },
+    "configuration": {
+      "title": "BBCode",
+      "properties": {
+        "bbcode.preview.mentionUrl": {
+          "type": "string",
+          "default": "https://xdaforums.com/member.php?u={id}",
+          "markdownDescription": "URL usada para `[MENTION=id]` y `[USER=id]`. `{id}` se reemplaza por el id del usuario. Vacío para no generar enlaces."
+        }
+      }
+    },
+    "keybindings": [
+      {
+        "command": "bbcode.preview",
+        "key": "ctrl+k v",
+        "mac": "cmd+k v",
+        "when": "editorLangId == bbcode"
+      }
+    ]
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js"
   }
 }
