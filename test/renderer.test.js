@@ -15,6 +15,13 @@ test('items de lista con etiquetas dentro', () => {
   );
 });
 
+test('listas ordenadas estilo phpBB: [list=1|a|A|i|I] (#1)', () => {
+  assert.strictEqual(bbcodeToHtml('[list=1][*]x[/list]'), '<ol><li>x</li></ol>');
+  for (const type of ['a', 'A', 'i', 'I']) {
+    assert.strictEqual(bbcodeToHtml(`[list=${type}]\n[*]x\n[*]y\n[/list]`), `<ol type="${type}"><li>x</li><li>y</li></ol>`);
+  }
+});
+
 test('listas anidadas dentro de citas', () => {
   const html = bbcodeToHtml('[QUOTE][LIST][*]a[LIST][*]b[/LIST][/LIST][/QUOTE]');
   assert.match(html, /<blockquote[^>]*>.*<ul><li>a<ul><li>b<\/li><\/ul><\/li><\/ul>/);
