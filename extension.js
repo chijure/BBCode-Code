@@ -1,6 +1,5 @@
 const vscode = require('vscode');
 const path = require('path');
-const os = require('os');
 const crypto = require('crypto');
 const { bbcodeToHtml } = require('./bbcode-renderer');
 const { registerEditorFeatures } = require('./editor-features');
@@ -32,8 +31,7 @@ function previewOptions(webview, document) {
   return {
     body,
     theme,
-    title: path.basename(document.fileName).replace(/\.bbcode$/i, ''),
-    author: os.userInfo().username
+    title: path.basename(document.fileName).replace(/\.bbcode$/i, '')
   };
 }
 
@@ -101,8 +99,7 @@ async function exportHtml() {
     body: exportBody(document),
     csp: "default-src 'none'; img-src https: http: data: file:; style-src 'unsafe-inline'",
     theme,
-    title: path.basename(document.fileName).replace(/\.bbcode$/i, ''),
-    author: os.userInfo().username
+    title: path.basename(document.fileName).replace(/\.bbcode$/i, '')
   });
   await vscode.workspace.fs.writeFile(target, Buffer.from(html, 'utf8'));
 

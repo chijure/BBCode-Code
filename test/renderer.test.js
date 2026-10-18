@@ -88,10 +88,10 @@ test('collapseBlankLines imita los saltos del editor de XDA', () => {
 
 test('buildPage aplica el tema y la maqueta del post', () => {
   const { buildPage } = require('../preview-html');
-  const page = buildPage({ body: '<b>hola</b>', csp: "default-src 'none'", theme: 'xda-classic', title: 'Mi post', author: 'chijure' });
+  const page = buildPage({ body: '<b>hola</b>', csp: "default-src 'none'", theme: 'xda-classic', title: 'Mi post' });
   assert.match(page, /class="page theme-xda-classic"/);
   assert.match(page, /<h1 class="thread-title">Mi post<\/h1>/);
-  assert.match(page, /<div class="username">chijure<\/div>/);
+  assert.doesNotMatch(page, /post-user|avatar|Senior Member/);
   assert.doesNotMatch(buildPage({ body: 'x', csp: '', theme: 'vscode' }), /class="post"/);
   assert.match(buildPage({ body: 'x', csp: '', theme: 'otro' }), /theme-xda"/);
 });

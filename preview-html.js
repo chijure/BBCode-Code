@@ -27,7 +27,6 @@ const XDA_DARK = `
   --header-bg: #1b1d21;
   --header-fg: #a1a3ae;
   --post-bg: #2d3036;
-  --user-bg: #393d43;
   --fg: #ffffff;
   --muted: #a1a3ae;
   --border: #474c54;
@@ -57,7 +56,6 @@ const XDA_LIGHT = `
   --header-bg: #eaedf2;
   --header-fg: #70727b;
   --post-bg: #ffffff;
-  --user-bg: #f1f3f6;
   --fg: #1b1d21;
   --muted: #70727b;
   --border: #d7dde6;
@@ -87,7 +85,6 @@ const XDA_CLASSIC = `
   --header-bg: #ebebeb;
   --header-fg: #70727b;
   --post-bg: #f9f9f9;
-  --user-bg: #f9f9f9;
   --fg: #1b1d21;
   --muted: #70727b;
   --border: #d2d2d2;
@@ -117,7 +114,6 @@ const VSCODE_VARS = `
   --header-bg: var(--vscode-editor-background);
   --header-fg: var(--vscode-descriptionForeground, #888);
   --post-bg: var(--vscode-editor-background);
-  --user-bg: var(--vscode-editor-background);
   --fg: var(--vscode-editor-foreground);
   --muted: var(--vscode-descriptionForeground, #888);
   --border: var(--vscode-panel-border, rgba(128, 128, 128, 0.35));
@@ -185,23 +181,6 @@ const STYLES = `
     overflow: hidden;
   }
   .theme-xda-classic .post { border: 1px solid var(--border); }
-  .post-user {
-    flex: 0 0 150px;
-    box-sizing: border-box;
-    padding: 15px;
-    text-align: center;
-    background: var(--user-bg);
-    border-right: 1px solid var(--border);
-  }
-  .avatar {
-    width: 96px; height: 96px; margin: 0 auto 6px;
-    border-radius: var(--radius);
-    display: flex; align-items: center; justify-content: center;
-    background: var(--accent); color: #fff;
-    font-size: 58px; line-height: 1;
-  }
-  .username { font-weight: 700; color: var(--link); }
-  .user-title { font-size: 12px; }
   .post-main { flex: 1; min-width: 0; padding: 15px; }
   .post-header {
     display: flex; justify-content: space-between; align-items: center;
@@ -212,12 +191,6 @@ const STYLES = `
   .post-body { padding-bottom: 15px; }
   @media (max-width: 650px) {
     .page { padding: 10px; }
-    .post { flex-direction: column; }
-    .post-user {
-      display: flex; align-items: center; gap: 10px; text-align: left;
-      border-right: 0; border-bottom: 1px solid var(--border);
-    }
-    .avatar { width: 48px; height: 48px; margin: 0; font-size: 29px; }
   }
 
   /* Contenido BBCode (.bbWrapper) */
@@ -404,29 +377,20 @@ const SCRIPT = `
 
 /**
  * Contenido de la página (lo que se reemplaza en cada actualización).
- * @param {{ body: string, theme?: string, title?: string, author?: string, date?: Date }} options
+ * @param {{ body: string, theme?: string, title?: string, date?: Date }} options
  * @returns {{ className: string, html: string }}
  */
-function buildContent({ body, theme = 'xda', title = '', author = '', date = new Date() }) {
+function buildContent({ body, theme = 'xda', title = '', date = new Date() }) {
   const themeName = THEMES.includes(theme) ? theme : 'xda';
   const className = `page theme-${themeName}`;
   if (themeName === 'vscode') return { className, html: body };
 
-  const name = author || 'Autor';
   const shownDate = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   const html = `
       <div class="thread-header">
         <h1 class="thread-title">${escapeHtml(title)}</h1>
-        <div class="thread-meta">${escapeHtml(name)} · ${shownDate}</div>
       </div>
       <article class="post">
-        <div class="post-user">
-          <div class="avatar">${escapeHtml(name.charAt(0).toUpperCase())}</div>
-          <div>
-            <div class="username">${escapeHtml(name)}</div>
-            <div class="user-title">Senior Member</div>
-          </div>
-        </div>
         <div class="post-main">
           <div class="post-header"><span>${shownDate}</span><span>#1</span></div>
           <div class="post-body">${body}</div>
@@ -438,7 +402,7 @@ function buildContent({ body, theme = 'xda', title = '', author = '', date = new
 /**
  * Página completa. Con `nonce` incluye el script de sincronización.
  * @param {{ body: string, csp: string, nonce?: string, line?: number, uri?: string, theme?: string,
- *           title?: string, author?: string, date?: Date }} options
+ *           title?: string, date?: Date }} options
  */
 function buildPage(options) {
   const { className, html } = buildContent(options);

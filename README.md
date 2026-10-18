@@ -7,7 +7,7 @@ Soporte BBCode para VS Code: vista previa compatible con XDA/XenForo y phpBB, av
 - Resaltado de sintaxis: etiquetas y atributos, texto en negrita, cursiva, subrayado y tachado, URLs, y `[CODE=bash|java|c|xml…]` con el resaltado del lenguaje. Lo que va dentro de `[CODE]` y `[PLAIN]` no se colorea como BBCode.
 - Registro de idioma `BBCode`/`bbcode` con extensión `.bbcode`.
 - Pares automáticos para corchetes `[]` y comillas dobles, más bracket matching en los documentos.
-- Vista previa con **apariencia de XDA Forums**: título del hilo, tarjeta del post con la columna del usuario, y citas, código, spoilers y tablas con los colores reales de los temas **XDA Dark**, **XDA Theme** (claro) y **XDA Classic**. El botón 🎨 de la vista previa cambia de estilo.
+- Vista previa con **apariencia de XDA Forums**: título del hilo, tarjeta del post, y citas, código, spoilers y tablas con los colores reales de los temas **XDA Dark**, **XDA Theme** (claro) y **XDA Classic**. El botón 🎨 de la vista previa cambia de estilo.
 - Vista previa en un panel lateral (botón en la barra del editor o `Ctrl/Cmd+K V`) que se actualiza mientras escribes, sigue al archivo `.bbcode` activo y **sincroniza el scroll** con el editor. Doble clic en la vista previa salta a esa línea.
 - Renderer compatible con el dialecto de XenForo/XDA:
   - Texto: `[B]`, `[I]`, `[U]`, `[S]`, `[SUB]`, `[SUP]`, `[COLOR]`, `[SIZE]` (escala 1–7), `[FONT]`, `[HIGHLIGHT]`.
@@ -74,6 +74,10 @@ Soporte BBCode para VS Code: vista previa compatible con XDA/XenForo y phpBB, av
 - No se han reportado problemas todavía. Si encuentras algo, abre un issue en el repositorio.
 
 ## Notas de versión
+
+### 1.3.1
+
+La vista previa ya no muestra la columna de usuario.
 
 ### 1.3.0
 

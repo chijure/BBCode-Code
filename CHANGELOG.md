@@ -6,6 +6,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.3.1]
+- La vista previa ya no muestra la columna de usuario (avatar, nombre y "Senior Member") ni el nombre en el encabezado: solo el título del hilo, la fecha y el post.
+
 ## [1.3.0]
 - Vista previa con apariencia de XDA Forums: encabezado del hilo, post con columna de usuario y estilos de XenForo con los colores reales de XDA Dark, XDA Theme (claro) y XDA Classic. Botón para cambiar de estilo y ajuste `bbcode.preview.theme`.
 - Saltos de línea como los deja el editor de XDA (`bbcode.preview.xdaLineBreaks`), y sin saltos extra después de bloques anidados ni al final del post.
