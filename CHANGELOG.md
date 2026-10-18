@@ -6,11 +6,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
-## [1.2.0]
-- Esquema del post en la vista *Outline* y en la barra de navegación: títulos de sección (`[SIZE=4..7]`, `[HEADING]`, `[B][U]…[/U][/B]`, `[B]Texto:[/B]`) y spoilers, anidados por nivel.
-- Plegado de `[QUOTE]`, `[SPOILER]`, `[CODE]`, `[LIST]`, `[TABLE]`, `[CENTER]`… cuando ocupan varias líneas, y de cada sección del post.
-- La vista previa se vuelve a abrir al reiniciar VS Code, en el mismo archivo y posición.
-- Comandos **BBCode: Copiar como HTML** y **BBCode: Exportar a HTML…** (también en el menú contextual del editor). La exportación es una página completa con el estilo de XDA elegido.
+## [1.3.0]
+- Vista previa con apariencia de XDA Forums: encabezado del hilo, post con columna de usuario y estilos de XenForo con los colores reales de XDA Dark, XDA Theme (claro) y XDA Classic. Botón para cambiar de estilo y ajuste `bbcode.preview.theme`.
+- Saltos de línea como los deja el editor de XDA (`bbcode.preview.xdaLineBreaks`), y sin saltos extra después de bloques anidados ni al final del post.
 - Scroll sincronizado entre el editor y la vista previa, en los dos sentidos (`bbcode.preview.scrollPreviewWithEditor` y `bbcode.preview.scrollEditorWithPreview`). Doble clic en la vista previa salta a esa línea del editor.
 - La vista previa ya no vuelve al inicio con cada cambio: solo se reemplaza el contenido y se mantiene la posición.
 - Nuevo resaltado de sintaxis:
@@ -18,8 +16,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
   - El contenido de `[CODE]`, `[ICODE]` y `[PLAIN]` no se colorea como BBCode; `[CODE=bash]`, `java`, `c`, `cpp`, `js`, `python`, `xml`, `json`, `diff`, `makefile` e `ini` usan el resaltado de ese lenguaje.
   - El texto dentro de `[B]`, `[I]`, `[U]` y `[S]` se muestra en negrita, cursiva, subrayado y tachado.
   - Las URLs (en `[URL]`, `[IMG]`, `[URL=...]` y sueltas en el texto) se resaltan como enlaces.
-- Vista previa con apariencia de XDA Forums: encabezado del hilo, post con columna de usuario y estilos de XenForo con los colores reales de XDA Dark, XDA Theme (claro) y XDA Classic. Botón para cambiar de estilo y ajuste `bbcode.preview.theme`.
-- Saltos de línea como los deja el editor de XDA (`bbcode.preview.xdaLineBreaks`), y sin saltos extra después de bloques anidados ni al final del post.
+- Esquema del post en la vista *Outline* y en la barra de navegación: títulos de sección (`[SIZE=4..7]`, `[HEADING]`, `[B][U]…[/U][/B]`, `[B]Texto:[/B]`) y spoilers, anidados por nivel.
+- Plegado de `[QUOTE]`, `[SPOILER]`, `[CODE]`, `[LIST]`, `[TABLE]`, `[CENTER]`… cuando ocupan varias líneas, y de cada sección del post.
+- La vista previa se vuelve a abrir al reiniciar VS Code, en el mismo archivo y posición.
+- Comandos **BBCode: Copiar como HTML** y **BBCode: Exportar a HTML…** (también en el menú contextual del editor). La exportación es una página completa con el estilo de XDA elegido.
+
+## [1.2.0]
 - Avisos (diagnósticos) de etiquetas sin cerrar, cierres sin apertura, anidamientos cruzados y `[*]` fuera de listas. Ajuste `bbcode.validate`.
 - Autocierre de la última etiqueta abierta al escribir `[/`. Ajuste `bbcode.autoCloseTags`.
 - Atajos `Cmd/Ctrl+B`, `Cmd/Ctrl+I`, `Cmd/Ctrl+U` (ponen o quitan la etiqueta) y `Cmd/Ctrl+Alt+K` (enlace).

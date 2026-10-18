@@ -75,9 +75,13 @@ Soporte BBCode para VS Code: vista previa compatible con XDA/XenForo y phpBB, av
 
 ## Notas de versión
 
+### 1.3.0
+
+Vista previa con apariencia de XDA (temas Dark, claro y Classic) y scroll sincronizado, nuevo resaltado de sintaxis, esquema y plegado del post, y exportación a HTML.
+
 ### 1.2.0
 
-Vista previa con apariencia de XDA (temas Dark, claro y Classic) y scroll sincronizado, nuevo resaltado de sintaxis, esquema y plegado del post, exportación a HTML, avisos de etiquetas mal cerradas, autocierre con `[/`, atajos `Cmd+B/I/U`, autocompletado de etiquetas y snippets de XDA.
+Avisos de etiquetas mal cerradas, autocierre con `[/`, atajos `Cmd+B/I/U`, autocompletado de etiquetas y snippets de XDA.
 
 ### 1.1.0
 
