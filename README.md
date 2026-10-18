@@ -4,11 +4,11 @@ Soporte BBCode para VS Code: vista previa compatible con XDA/XenForo y phpBB, av
 
 ## Características
 
-- Resaltado de etiquetas BBCode, atributos y cierres usando el grammar `source.bbcode`.
+- Resaltado de sintaxis: etiquetas y atributos, texto en negrita, cursiva, subrayado y tachado, URLs, y `[CODE=bash|java|c|xml…]` con el resaltado del lenguaje. Lo que va dentro de `[CODE]` y `[PLAIN]` no se colorea como BBCode.
 - Registro de idioma `BBCode`/`bbcode` con extensión `.bbcode`.
 - Pares automáticos para corchetes `[]` y comillas dobles, más bracket matching en los documentos.
 - Vista previa con **apariencia de XDA Forums**: título del hilo, tarjeta del post con la columna del usuario, y citas, código, spoilers y tablas con los colores reales de los temas **XDA Dark**, **XDA Theme** (claro) y **XDA Classic**. El botón 🎨 de la vista previa cambia de estilo.
-- Vista previa en un panel lateral (botón en la barra del editor o `Ctrl/Cmd+K V`) que se actualiza mientras escribes y sigue al archivo `.bbcode` activo.
+- Vista previa en un panel lateral (botón en la barra del editor o `Ctrl/Cmd+K V`) que se actualiza mientras escribes, sigue al archivo `.bbcode` activo y **sincroniza el scroll** con el editor. Doble clic en la vista previa salta a esa línea.
 - Renderer compatible con el dialecto de XenForo/XDA:
   - Texto: `[B]`, `[I]`, `[U]`, `[S]`, `[SUB]`, `[SUP]`, `[COLOR]`, `[SIZE]` (escala 1–7), `[FONT]`, `[HIGHLIGHT]`.
   - Bloques: `[CENTER]`, `[LEFT]`, `[RIGHT]`, `[JUSTIFY]`, `[INDENT]`, `[HEADING]`, `[HR]`, `[QUOTE]` (con autor), `[SPOILER]` (con título), `[ISPOILER]`.
@@ -58,6 +58,7 @@ Soporte BBCode para VS Code: vista previa compatible con XDA/XenForo y phpBB, av
 - `bbcode.autoCloseTags` (`true`): completa el cierre al escribir `[/`.
 - `bbcode.tagCase` (`auto`): mayúsculas (`upper`, estilo XDA) o minúsculas (`lower`, estilo phpBB) en las etiquetas que inserta la extensión; `auto` usa el estilo que predomina en el documento.
 - `bbcode.preview.theme` (`xda`): estilo de la vista previa: `xda` (oscuro o claro según VS Code), `xda-dark`, `xda-light`, `xda-classic` o `vscode` (solo el contenido con los colores del editor).
+- `bbcode.preview.scrollPreviewWithEditor` y `bbcode.preview.scrollEditorWithPreview` (`true`): sincronizan el scroll en cada sentido.
 - `bbcode.preview.xdaLineBreaks` (`true`): muestra los saltos como los deja el editor de XDA, donde una línea en blanco entre párrafos queda como un solo salto.
 - `bbcode.preview.mentionUrl`: URL para `[MENTION=id]`/`[USER=id]` (`{id}` se reemplaza). Por defecto apunta a los perfiles de XDA.
 
@@ -69,7 +70,7 @@ Soporte BBCode para VS Code: vista previa compatible con XDA/XenForo y phpBB, av
 
 ### 1.2.0
 
-Vista previa con apariencia de XDA (temas Dark, claro y Classic), avisos de etiquetas mal cerradas, autocierre con `[/`, atajos `Cmd+B/I/U`, autocompletado de etiquetas y snippets de XDA.
+Vista previa con apariencia de XDA (temas Dark, claro y Classic) y scroll sincronizado, nuevo resaltado de sintaxis, avisos de etiquetas mal cerradas, autocierre con `[/`, atajos `Cmd+B/I/U`, autocompletado de etiquetas y snippets de XDA.
 
 ### 1.1.0
 

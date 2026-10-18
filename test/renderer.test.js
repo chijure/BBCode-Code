@@ -95,3 +95,11 @@ test('buildPage aplica el tema y la maqueta del post', () => {
   assert.doesNotMatch(buildPage({ body: 'x', csp: '', theme: 'vscode' }), /class="post"/);
   assert.match(buildPage({ body: 'x', csp: '', theme: 'otro' }), /theme-xda"/);
 });
+
+test('lineMarkers: data-line con la línea del archivo original', () => {
+  const html = bbcodeToHtml('\n\n[CENTER]T[/CENTER]\nhola\n[LIST]\n[*]a\n[/LIST]', { lineMarkers: true });
+  assert.match(html, /^<div data-line="2" style="text-align:center">/);
+  assert.match(html, /<span data-line="3"><\/span>hola/);
+  assert.match(html, /<ul data-line="4"><li data-line="5">/);
+  assert.doesNotMatch(bbcodeToHtml('[B]x[/B]'), /data-line/);
+});

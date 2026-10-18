@@ -56,7 +56,20 @@
       {
         "language": "bbcode",
         "scopeName": "source.bbcode",
-        "path": "./syntaxes/bbcode.tmLanguage.json"
+        "path": "./syntaxes/bbcode.tmLanguage.json",
+        "embeddedLanguages": {
+          "meta.embedded.block.shellscript": "shellscript",
+          "meta.embedded.block.java": "java",
+          "meta.embedded.block.c": "c",
+          "meta.embedded.block.cpp": "cpp",
+          "meta.embedded.block.javascript": "javascript",
+          "meta.embedded.block.python": "python",
+          "meta.embedded.block.xml": "xml",
+          "meta.embedded.block.json": "json",
+          "meta.embedded.block.diff": "diff",
+          "meta.embedded.block.makefile": "makefile",
+          "meta.embedded.block.ini": "ini"
+        }
       }
     ],
     "commands": [
@@ -163,6 +176,16 @@
           "type": "boolean",
           "default": true,
           "markdownDescription": "Muestra los saltos de línea como los deja el editor de XDA: una línea en blanco entre párrafos se convierte en un solo salto. No aplica al estilo `vscode`."
+        },
+        "bbcode.preview.scrollPreviewWithEditor": {
+          "type": "boolean",
+          "default": true,
+          "description": "Al desplazarte en el editor, la vista previa baja o sube contigo."
+        },
+        "bbcode.preview.scrollEditorWithPreview": {
+          "type": "boolean",
+          "default": true,
+          "description": "Al desplazarte en la vista previa, el editor se mueve a la misma parte del post."
         }
       }
     },
@@ -215,6 +238,7 @@
     ]
   },
   "scripts": {
-    "test": "node --test test/*.test.js"
+    "test": "node --test test/*.test.js",
+    "grammar": "node scripts/generate-grammar.js"
   }
 }

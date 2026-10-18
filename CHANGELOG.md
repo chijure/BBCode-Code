@@ -7,6 +7,13 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## [Unreleased]
 
 ## [1.2.0]
+- Scroll sincronizado entre el editor y la vista previa, en los dos sentidos (`bbcode.preview.scrollPreviewWithEditor` y `bbcode.preview.scrollEditorWithPreview`). Doble clic en la vista previa salta a esa línea del editor.
+- La vista previa ya no vuelve al inicio con cada cambio: solo se reemplaza el contenido y se mantiene la posición.
+- Nuevo resaltado de sintaxis:
+  - Solo se colorean las etiquetas conocidas, así `[ROM][UNOFFICIAL]` queda como texto.
+  - El contenido de `[CODE]`, `[ICODE]` y `[PLAIN]` no se colorea como BBCode; `[CODE=bash]`, `java`, `c`, `cpp`, `js`, `python`, `xml`, `json`, `diff`, `makefile` e `ini` usan el resaltado de ese lenguaje.
+  - El texto dentro de `[B]`, `[I]`, `[U]` y `[S]` se muestra en negrita, cursiva, subrayado y tachado.
+  - Las URLs (en `[URL]`, `[IMG]`, `[URL=...]` y sueltas en el texto) se resaltan como enlaces.
 - Vista previa con apariencia de XDA Forums: encabezado del hilo, post con columna de usuario y estilos de XenForo con los colores reales de XDA Dark, XDA Theme (claro) y XDA Classic. Botón para cambiar de estilo y ajuste `bbcode.preview.theme`.
 - Saltos de línea como los deja el editor de XDA (`bbcode.preview.xdaLineBreaks`), y sin saltos extra después de bloques anidados ni al final del post.
 - Avisos (diagnósticos) de etiquetas sin cerrar, cierres sin apertura, anidamientos cruzados y `[*]` fuera de listas. Ajuste `bbcode.validate`.

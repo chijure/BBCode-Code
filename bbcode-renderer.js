@@ -91,15 +91,15 @@ function parseDocument(src) {
   const label = (n) => `[${n.rawName}]`;
   const top = () => stack[stack.length - 1];
   const append = (node) => top().children.push(node);
-  const pushText = (text) => {
+  const pushText = (text, offset) => {
     if (!text) return;
     const children = top().children;
     const last = children[children.length - 1];
     if (last && last.type === 'text') last.value += text;
-    else children.push({ type: 'text', value: text });
+    else children.push({ type: 'text', value: text, start: offset });
   };
   const reopen = (nodes) => nodes.forEach((n) => {
-    const clone = { ...n, children: [] };
+    const clone = { ...n, children: [], reopened: true };
     append(clone);
     stack.push(clone);
   });
@@ -113,11 +113,11 @@ function parseDocument(src) {
     const def = TAGS[name];
     const start = match.index;
     const end = start + full.length;
-    pushText(src.slice(pos, start));
+    pushText(src.slice(pos, start), pos);
     pos = end;
 
     if (!def) {
-      pushText(full);
+      pushText(full, start);
       continue;
     }
 
@@ -126,7 +126,7 @@ function parseDocument(src) {
       while (i > 0 && stack[i].name !== name) i--;
       if (rest || i === 0) {
         report(start, end, `[/${rawName}] no tiene una etiqueta de apertura.`);
-        pushText(full);
+        pushText(full, start);
         continue;
       }
       // Anidamiento cruzado ([SIZE][CENTER]x[/SIZE]y[/CENTER]): se cierran las
@@ -149,7 +149,7 @@ function parseDocument(src) {
       while (j > 0 && stack[j].name !== '*' && !LIST_TAGS.has(stack[j].name)) j--;
       if (j === 0) {
         report(start, end, '[*] está fuera de una lista ([LIST]).');
-        pushText(full);
+        pushText(full, start);
         continue;
       }
       // Las etiquetas abiertas en el item anterior ([COLOR][*]a[*]b[/COLOR]) continúan en el nuevo.
@@ -172,7 +172,7 @@ function parseDocument(src) {
       if (!closeMatch) {
         report(start, end, `${label(node)} no se cerró: falta [/${rawName}].`);
         if (!unclosedRaw) unclosedRaw = { node, depth: stack.length };
-        pushText(full);
+        pushText(full, start);
         continue;
       }
       node.children.push({ type: 'text', value: src.slice(pos, pos + closeMatch.index) });
@@ -185,7 +185,7 @@ function parseDocument(src) {
     append(node);
     if (!def.isVoid) stack.push(node);
   }
-  pushText(src.slice(pos));
+  pushText(src.slice(pos), pos);
 
   stack.slice(1).forEach((n) => {
     if (n.name !== '*') report(n.start, n.end, `${label(n)} no se cerró: falta [/${n.rawName}].`);
@@ -269,7 +269,7 @@ function renderNodes(nodes, ctx, opts = {}) {
   nodes.forEach((node, index) => {
     if (node.type !== 'text') {
       if (opts.skipBlank && !node.children.length && !TAGS[node.name].isVoid) return;
-      out += renderTag(node, ctx);
+      out += withLine(renderTag(node, ctx), node, ctx);
       return;
     }
     let value = node.value;
@@ -280,6 +280,9 @@ function renderNodes(nodes, ctx, opts = {}) {
     if (endsWithBlock(nodes[index - 1])) value = value.replace(/^[ \t]*\n/, '');
     if (opts.trim && index === 0) value = value.replace(/^\s+/, '');
     if (opts.trim && index === nodes.length - 1) value = value.replace(/\s+$/, '');
+    if (ctx.lineOf && node.start !== undefined && value.trim()) {
+      out += `<span data-line="${ctx.lineOf(node.start + Math.max(0, node.value.search(/\S/)))}"></span>`;
+    }
     out += renderText(value, ctx);
   });
   return out;
@@ -287,6 +290,12 @@ function renderNodes(nodes, ctx, opts = {}) {
 
 // Quita los <br> finales aunque estén dentro de etiquetas inline ("a<br></span>").
 const trimTrailingBreaks = (html) => html.replace(/(?:<br>\s*)+((?:<\/[a-z]+>)*)$/, '$1');
+
+// Marca el primer elemento con la línea de origen (para sincronizar el scroll).
+function withLine(html, node, ctx) {
+  if (!ctx.lineOf || node.start === undefined || node.reopened) return html;
+  return html.replace(/^<([a-zA-Z][a-zA-Z0-9]*)/, `<$1 data-line="${ctx.lineOf(node.start)}"`);
+}
 
 const blockChildren = (node, ctx) => renderNodes(node.children, ctx, { leadingNewline: true });
 
@@ -461,9 +470,28 @@ function renderTag(node, ctx) {
   }
 }
 
+const countLeadingLines = (text) => (text.match(/^\s*\n/) || [''])[0].split('\n').length - 1;
+
+/** Devuelve una función offset -> número de línea (base 0) dentro del documento original. */
+function lineLookup(source, lineOffset) {
+  const starts = [0];
+  for (let i = source.indexOf('\n'); i !== -1; i = source.indexOf('\n', i + 1)) starts.push(i + 1);
+  return (offset) => {
+    let lo = 0;
+    let hi = starts.length - 1;
+    while (lo < hi) {
+      const mid = (lo + hi + 1) >> 1;
+      if (starts[mid] <= offset) lo = mid;
+      else hi = mid - 1;
+    }
+    return lo + lineOffset;
+  };
+}
+
 /**
  * @param {string} text BBCode de entrada.
- * @param {{ resolveImage?: (src: string) => string, mentionUrl?: string, collapseBlankLines?: boolean }} [options]
+ * @param {{ resolveImage?: (src: string) => string, mentionUrl?: string, collapseBlankLines?: boolean,
+ *           lineMarkers?: boolean }} [options] lineMarkers agrega data-line a los elementos.
  * @returns {string} HTML.
  */
 function bbcodeToHtml(text, options = {}) {
@@ -474,7 +502,10 @@ function bbcodeToHtml(text, options = {}) {
     inLink: false
   };
   // Como XenForo, se ignoran las líneas en blanco al inicio y al final del post.
-  const source = String(text || '').replace(/\r\n?/g, '\n').replace(/^\s*\n/, '').trimEnd();
+  const normalized = String(text || '').replace(/\r\n?/g, '\n');
+  const source = normalized.replace(/^\s*\n/, '').trimEnd();
+  // Las líneas en blanco iniciales se quitan, pero los números de línea siguen siendo los del archivo.
+  if (options.lineMarkers) ctx.lineOf = lineLookup(source, countLeadingLines(normalized));
   return renderNodes(parse(source).children, ctx);
 }
 

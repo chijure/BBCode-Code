@@ -293,17 +293,123 @@ const STYLES = `
   }
 `;
 
-/**
- * @param {{ body: string, csp: string, theme?: string, title?: string, author?: string, date?: Date }} options
- */
-function buildPage({ body, csp, theme = 'xda', title = '', author = '', date = new Date() }) {
-  const themeName = THEMES.includes(theme) ? theme : 'xda';
-  let content = body;
+// Script de la vista previa: sincroniza el scroll con el editor usando los
+// atributos data-line y aplica las actualizaciones sin recargar la página.
+const SCRIPT = `
+(function () {
+  const vscode = acquireVsCodeApi();
+  const page = document.querySelector('.page');
+  const OFFSET = 12;
+  let ignoreScrollUntil = 0;
+  let skipNextScroll = false;
+  let lastLine = -1;
 
-  if (themeName !== 'vscode') {
-    const name = author || 'Autor';
-    const shownDate = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    content = `
+  // Los scrolls que hace este script no se reenvían al editor.
+  function scrollProgrammatically(y) {
+    if (Math.abs(window.scrollY - y) < 1) return;
+    skipNextScroll = true;
+    ignoreScrollUntil = Date.now() + 300;
+    window.scrollTo(0, y);
+  }
+
+  // Una posición por línea de origen: { line, top }.
+  function markers() {
+    const byLine = new Map();
+    for (const el of document.querySelectorAll('[data-line]')) {
+      const line = Number(el.dataset.line);
+      const top = el.getBoundingClientRect().top + window.scrollY;
+      if (!byLine.has(line) || top < byLine.get(line)) byLine.set(line, top);
+    }
+    return Array.from(byLine, ([line, top]) => ({ line, top })).sort((a, b) => a.line - b.line);
+  }
+
+  function scrollToLine(line) {
+    const list = markers();
+    if (!list.length || line <= list[0].line) {
+      scrollProgrammatically(0);
+    } else {
+      let prev = list[0];
+      let next = null;
+      for (const m of list) {
+        if (m.line <= line) prev = m;
+        else { next = m; break; }
+      }
+      const y = !next || next.top <= prev.top
+        ? prev.top
+        : prev.top + (next.top - prev.top) * (line - prev.line) / (next.line - prev.line);
+      scrollProgrammatically(Math.max(0, Math.round(y - OFFSET)));
+    }
+  }
+
+  function lineAtY(y) {
+    const list = markers().sort((a, b) => a.top - b.top);
+    let prev = null;
+    let next = null;
+    for (const m of list) {
+      if (m.top <= y) prev = m;
+      else { next = m; break; }
+    }
+    if (!prev) return list.length ? list[0].line : 0;
+    if (!next || next.top === prev.top || next.line <= prev.line) return prev.line;
+    return Math.floor(prev.line + (next.line - prev.line) * (y - prev.top) / (next.top - prev.top));
+  }
+
+  let pending = false;
+  window.addEventListener('scroll', () => {
+    if (skipNextScroll) {
+      skipNextScroll = false;
+      return;
+    }
+    if (pending || Date.now() < ignoreScrollUntil) return;
+    pending = true;
+    requestAnimationFrame(() => {
+      pending = false;
+      const line = window.scrollY <= 0 ? 0 : lineAtY(window.scrollY + OFFSET);
+      if (line !== lastLine) {
+        lastLine = line;
+        vscode.postMessage({ type: 'reveal', line });
+      }
+    });
+  });
+
+  // Doble clic: ir a esa línea en el editor.
+  document.addEventListener('dblclick', (event) => {
+    vscode.postMessage({ type: 'open', line: lineAtY(event.clientY + window.scrollY) });
+  });
+
+  window.addEventListener('message', (event) => {
+    const message = event.data;
+    if (message.type === 'scroll') {
+      scrollToLine(message.line);
+    } else if (message.type === 'update') {
+      const y = window.scrollY;
+      page.className = message.className;
+      page.innerHTML = message.html;
+      scrollProgrammatically(y);
+    }
+  });
+
+  const initialLine = Number(document.body.dataset.line || 0);
+  if (initialLine > 0) {
+    scrollToLine(initialLine);
+    window.addEventListener('load', () => scrollToLine(initialLine));
+  }
+})();
+`;
+
+/**
+ * Contenido de la página (lo que se reemplaza en cada actualización).
+ * @param {{ body: string, theme?: string, title?: string, author?: string, date?: Date }} options
+ * @returns {{ className: string, html: string }}
+ */
+function buildContent({ body, theme = 'xda', title = '', author = '', date = new Date() }) {
+  const themeName = THEMES.includes(theme) ? theme : 'xda';
+  const className = `page theme-${themeName}`;
+  if (themeName === 'vscode') return { className, html: body };
+
+  const name = author || 'Autor';
+  const shownDate = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const html = `
       <div class="thread-header">
         <h1 class="thread-title">${escapeHtml(title)}</h1>
         <div class="thread-meta">${escapeHtml(name)} · ${shownDate}</div>
@@ -321,20 +427,30 @@ function buildPage({ body, csp, theme = 'xda', title = '', author = '', date = n
           <div class="post-body">${body}</div>
         </div>
       </article>`;
-  }
+  return { className, html };
+}
 
+/**
+ * Página completa. Con `nonce` incluye el script de sincronización.
+ * @param {{ body: string, csp: string, nonce?: string, line?: number, theme?: string, title?: string,
+ *           author?: string, date?: Date }} options
+ */
+function buildPage(options) {
+  const { className, html } = buildContent(options);
+  const script = options.nonce ? `<script nonce="${options.nonce}">${SCRIPT}</script>` : '';
   return `<!DOCTYPE html>
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta http-equiv="Content-Security-Policy" content="${csp}" />
+    <meta http-equiv="Content-Security-Policy" content="${options.csp}" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>${STYLES}</style>
   </head>
-  <body>
-    <div class="page theme-${themeName}">${content}</div>
+  <body data-line="${Number(options.line) || 0}">
+    <div class="${className}">${html}</div>
+    ${script}
   </body>
 </html>`;
 }
 
-module.exports = { buildPage, THEMES };
+module.exports = { buildPage, buildContent, THEMES };
