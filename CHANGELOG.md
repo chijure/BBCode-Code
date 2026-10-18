@@ -29,7 +29,6 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - Snippets de plantillas de XDA (`xda-header`, `xda-devdb`, `xda-instructions`...).
 - Ajuste `bbcode.tagCase` para insertar etiquetas en mayúsculas o minúsculas.
 - Se quitan los comentarios `//` de la configuración del lenguaje (BBCode no tiene comentarios).
-- CI en GitHub Actions: tests en cada push y publicación automática al crear un tag `vX.Y.Z`.
 
 ## [1.1.0]
 - Nuevo renderer basado en un parser con pila (`bbcode-renderer.js`), compatible con el BBCode de XenForo/XDA.
