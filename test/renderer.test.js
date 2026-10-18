@@ -76,3 +76,22 @@ test('openTagsAt: etiquetas abiertas para autocerrar', () => {
   assert.deepStrictEqual(openTagsAt('[QUOTE][CODE]x [B]y'), ['QUOTE', 'CODE']);
   assert.deepStrictEqual(openTagsAt('[B]a[/B]'), []);
 });
+
+test('collapseBlankLines imita los saltos del editor de XDA', () => {
+  const src = '[SIZE=4][B]About[/B][/SIZE]\n\nText one.\n\nText two.\n[LIST]\n[*]a\n[/LIST]\n\n[COLOR=Red][CENTER]x[/CENTER][/COLOR]\n\nNext\n';
+  assert.strictEqual(
+    bbcodeToHtml(src, { collapseBlankLines: true }),
+    '<span style="font-size:15px"><strong>About</strong></span><br>\nText one.<br>\nText two.<br>\n' +
+      '<ul><li>a</li></ul><span style="color:Red"><div style="text-align:center">x</div></span>Next'
+  );
+});
+
+test('buildPage aplica el tema y la maqueta del post', () => {
+  const { buildPage } = require('../preview-html');
+  const page = buildPage({ body: '<b>hola</b>', csp: "default-src 'none'", theme: 'xda-classic', title: 'Mi post', author: 'chijure' });
+  assert.match(page, /class="page theme-xda-classic"/);
+  assert.match(page, /<h1 class="thread-title">Mi post<\/h1>/);
+  assert.match(page, /<div class="username">chijure<\/div>/);
+  assert.doesNotMatch(buildPage({ body: 'x', csp: '', theme: 'vscode' }), /class="post"/);
+  assert.match(buildPage({ body: 'x', csp: '', theme: 'otro' }), /theme-xda"/);
+});

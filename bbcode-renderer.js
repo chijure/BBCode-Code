@@ -221,6 +221,14 @@ function openTagsAt(textBefore) {
 
 const isBlockNode = (node) => node && node.type === 'tag' && TAGS[node.name] && TAGS[node.name].block;
 
+// [COLOR][SIZE][CENTER]x[/CENTER][/SIZE][/COLOR] también termina en un bloque.
+const endsWithBlock = (node) => {
+  if (!node || node.type !== 'tag') return false;
+  if (isBlockNode(node)) return true;
+  const children = node.children.filter((c) => c.type !== 'text' || c.value.trim());
+  return endsWithBlock(children[children.length - 1]);
+};
+
 const textOf = (node) =>
   node.type === 'text' ? node.value : (node.children || []).map(textOf).join('');
 
@@ -266,8 +274,10 @@ function renderNodes(nodes, ctx, opts = {}) {
     }
     let value = node.value;
     if (opts.skipBlank && !value.trim()) return;
+    // El editor de XDA convierte cada párrafo (separado por una línea en blanco) en un solo salto.
+    if (ctx.collapseBlankLines) value = value.replace(/\n[ \t]*(?:\n[ \t]*)+/g, '\n');
     if (index === 0 && opts.leadingNewline) value = value.replace(/^[ \t]*\n/, '');
-    if (isBlockNode(nodes[index - 1])) value = value.replace(/^[ \t]*\n/, '');
+    if (endsWithBlock(nodes[index - 1])) value = value.replace(/^[ \t]*\n/, '');
     if (opts.trim && index === 0) value = value.replace(/^\s+/, '');
     if (opts.trim && index === nodes.length - 1) value = value.replace(/\s+$/, '');
     out += renderText(value, ctx);
@@ -453,16 +463,18 @@ function renderTag(node, ctx) {
 
 /**
  * @param {string} text BBCode de entrada.
- * @param {{ resolveImage?: (src: string) => string, mentionUrl?: string }} [options]
+ * @param {{ resolveImage?: (src: string) => string, mentionUrl?: string, collapseBlankLines?: boolean }} [options]
  * @returns {string} HTML.
  */
 function bbcodeToHtml(text, options = {}) {
   const ctx = {
     resolveImage: options.resolveImage,
+    collapseBlankLines: Boolean(options.collapseBlankLines),
     mentionUrl: options.mentionUrl === undefined ? 'https://xdaforums.com/member.php?u={id}' : options.mentionUrl,
     inLink: false
   };
-  const source = String(text || '').replace(/\r\n?/g, '\n');
+  // Como XenForo, se ignoran las líneas en blanco al inicio y al final del post.
+  const source = String(text || '').replace(/\r\n?/g, '\n').replace(/^\s*\n/, '').trimEnd();
   return renderNodes(parse(source).children, ctx);
 }
 
