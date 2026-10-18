@@ -36,7 +36,8 @@
   ],
   "activationEvents": [
     "onLanguage:bbcode",
-    "onCommand:bbcode.preview"
+    "onCommand:bbcode.preview",
+    "onWebviewPanel:bbcodePreview"
   ],
   "contributes": {
     "languages": [
@@ -94,6 +95,16 @@
         "title": "Cambiar estilo de la vista previa",
         "category": "BBCode",
         "icon": "$(symbol-color)"
+      },
+      {
+        "command": "bbcode.copyHtml",
+        "title": "Copiar como HTML",
+        "category": "BBCode"
+      },
+      {
+        "command": "bbcode.exportHtml",
+        "title": "Exportar a HTML…",
+        "category": "BBCode"
       }
     ],
     "menus": {
@@ -116,6 +127,35 @@
         },
         {
           "command": "bbcode.insertLink",
+          "when": "editorLangId == bbcode"
+        },
+        {
+          "command": "bbcode.copyHtml",
+          "when": "editorLangId == bbcode"
+        },
+        {
+          "command": "bbcode.exportHtml",
+          "when": "editorLangId == bbcode"
+        },
+        {
+          "command": "bbcode.preview.changeTheme",
+          "when": "editorLangId == bbcode || activeWebviewPanelId == bbcodePreview"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "bbcode.preview",
+          "group": "bbcode@1",
+          "when": "editorLangId == bbcode"
+        },
+        {
+          "command": "bbcode.copyHtml",
+          "group": "bbcode@2",
+          "when": "editorLangId == bbcode"
+        },
+        {
+          "command": "bbcode.exportHtml",
+          "group": "bbcode@3",
           "when": "editorLangId == bbcode"
         }
       ]

@@ -139,6 +139,7 @@ function parseDocument(src) {
           : `Anidamiento cruzado: [/${rawName}] se cierra mientras ${label(n)} sigue abierta.`;
         report(start, end, message);
       });
+      stack[i].closeStart = start;
       stack.length = i;
       reopen(inner.filter((n) => !STRUCTURAL_TAGS.has(n.name)));
       continue;
@@ -176,6 +177,7 @@ function parseDocument(src) {
         continue;
       }
       node.children.push({ type: 'text', value: src.slice(pos, pos + closeMatch.index) });
+      node.closeStart = pos + closeMatch.index;
       pos += closeMatch.index + closeMatch[0].length;
       TAG_RE.lastIndex = pos;
       append(node);
@@ -195,6 +197,11 @@ function parseDocument(src) {
     ? stack.slice(1, unclosedRaw.depth).concat(unclosedRaw.node)
     : stack.slice(1);
   return { root, issues, openTags };
+}
+
+/** Árbol con posiciones: cada etiqueta tiene start (apertura) y closeStart (cierre, si existe). */
+function parseWithPositions(src) {
+  return parseDocument(String(src || '')).root;
 }
 
 /**
@@ -509,4 +516,4 @@ function bbcodeToHtml(text, options = {}) {
   return renderNodes(parse(source).children, ctx);
 }
 
-module.exports = { bbcodeToHtml, parse, diagnose, openTagsAt, TAGS };
+module.exports = { bbcodeToHtml, parse, parseWithPositions, diagnose, openTagsAt, TAGS };

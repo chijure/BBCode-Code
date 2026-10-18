@@ -1,5 +1,6 @@
 const vscode = require('vscode');
 const { diagnose, openTagsAt } = require('./bbcode-renderer');
+const { outline, foldingRanges } = require('./structure');
 
 const VALIDATE_DELAY_MS = 300;
 
@@ -254,6 +255,34 @@ function provideCompletions(document, position) {
   });
 }
 
+// ---------------------------------------------------------------------------
+// Esquema (Outline / breadcrumbs) y plegado
+// ---------------------------------------------------------------------------
+
+function provideDocumentSymbols(document) {
+  const roots = [];
+  const stack = [];
+  for (const item of outline(document.getText())) {
+    const end = document.lineAt(item.endLine).range.end;
+    const range = new vscode.Range(item.line, 0, end.line, end.character);
+    const selection = document.lineAt(item.line).range;
+    const kind = item.kind === 'spoiler' ? vscode.SymbolKind.Object : vscode.SymbolKind.String;
+    const symbol = new vscode.DocumentSymbol(item.title, '', kind, range, selection);
+
+    while (stack.length && (stack[stack.length - 1].level >= item.level || stack[stack.length - 1].endLine < item.line)) {
+      stack.pop();
+    }
+    if (stack.length) stack[stack.length - 1].symbol.children.push(symbol);
+    else roots.push(symbol);
+    stack.push({ level: item.level, endLine: item.endLine, symbol });
+  }
+  return roots;
+}
+
+function provideFoldingRanges(document) {
+  return foldingRanges(document.getText()).map((range) => new vscode.FoldingRange(range.start, range.end));
+}
+
 /**
  * @param {vscode.ExtensionContext} context
  */
@@ -263,7 +292,9 @@ function registerEditorFeatures(context) {
   context.subscriptions.push(
     vscode.commands.registerCommand('bbcode.toggleTag', toggleTag),
     vscode.commands.registerCommand('bbcode.insertLink', insertLink),
-    vscode.languages.registerCompletionItemProvider('bbcode', { provideCompletionItems: provideCompletions }, '[', '/')
+    vscode.languages.registerCompletionItemProvider('bbcode', { provideCompletionItems: provideCompletions }, '[', '/'),
+    vscode.languages.registerDocumentSymbolProvider('bbcode', { provideDocumentSymbols }, { label: 'BBCode' }),
+    vscode.languages.registerFoldingRangeProvider('bbcode', { provideFoldingRanges })
   );
 }
 

@@ -299,6 +299,8 @@ const SCRIPT = `
 (function () {
   const vscode = acquireVsCodeApi();
   const page = document.querySelector('.page');
+  // Lo que VS Code guarda para reabrir la vista previa al reiniciar.
+  const saveState = (line) => vscode.setState({ uri: document.body.dataset.uri, line });
   const OFFSET = 12;
   let ignoreScrollUntil = 0;
   let skipNextScroll = false;
@@ -367,6 +369,7 @@ const SCRIPT = `
       const line = window.scrollY <= 0 ? 0 : lineAtY(window.scrollY + OFFSET);
       if (line !== lastLine) {
         lastLine = line;
+        saveState(line);
         vscode.postMessage({ type: 'reveal', line });
       }
     });
@@ -381,6 +384,7 @@ const SCRIPT = `
     const message = event.data;
     if (message.type === 'scroll') {
       scrollToLine(message.line);
+      saveState(message.line);
     } else if (message.type === 'update') {
       const y = window.scrollY;
       page.className = message.className;
@@ -390,6 +394,7 @@ const SCRIPT = `
   });
 
   const initialLine = Number(document.body.dataset.line || 0);
+  saveState(initialLine);
   if (initialLine > 0) {
     scrollToLine(initialLine);
     window.addEventListener('load', () => scrollToLine(initialLine));
@@ -432,8 +437,8 @@ function buildContent({ body, theme = 'xda', title = '', author = '', date = new
 
 /**
  * Página completa. Con `nonce` incluye el script de sincronización.
- * @param {{ body: string, csp: string, nonce?: string, line?: number, theme?: string, title?: string,
- *           author?: string, date?: Date }} options
+ * @param {{ body: string, csp: string, nonce?: string, line?: number, uri?: string, theme?: string,
+ *           title?: string, author?: string, date?: Date }} options
  */
 function buildPage(options) {
   const { className, html } = buildContent(options);
@@ -446,7 +451,7 @@ function buildPage(options) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>${STYLES}</style>
   </head>
-  <body data-line="${Number(options.line) || 0}">
+  <body data-line="${Number(options.line) || 0}" data-uri="${escapeHtml(options.uri || '')}">
     <div class="${className}">${html}</div>
     ${script}
   </body>

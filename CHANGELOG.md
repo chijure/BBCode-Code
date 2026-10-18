@@ -7,6 +7,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## [Unreleased]
 
 ## [1.2.0]
+- Esquema del post en la vista *Outline* y en la barra de navegación: títulos de sección (`[SIZE=4..7]`, `[HEADING]`, `[B][U]…[/U][/B]`, `[B]Texto:[/B]`) y spoilers, anidados por nivel.
+- Plegado de `[QUOTE]`, `[SPOILER]`, `[CODE]`, `[LIST]`, `[TABLE]`, `[CENTER]`… cuando ocupan varias líneas, y de cada sección del post.
+- La vista previa se vuelve a abrir al reiniciar VS Code, en el mismo archivo y posición.
+- Comandos **BBCode: Copiar como HTML** y **BBCode: Exportar a HTML…** (también en el menú contextual del editor). La exportación es una página completa con el estilo de XDA elegido.
 - Scroll sincronizado entre el editor y la vista previa, en los dos sentidos (`bbcode.preview.scrollPreviewWithEditor` y `bbcode.preview.scrollEditorWithPreview`). Doble clic en la vista previa salta a esa línea del editor.
 - La vista previa ya no vuelve al inicio con cada cambio: solo se reemplaza el contenido y se mantiene la posición.
 - Nuevo resaltado de sintaxis:

@@ -18,6 +18,13 @@ Soporte BBCode para VS Code: vista previa compatible con XDA/XenForo y phpBB, av
   - Código: `[CODE]`, `[CODE=lang]`, `[PHP]`, `[HTML]`, `[ICODE]`, `[PLAIN]`.
   - Atributos con o sin comillas (`[SIZE="4"]`, `[URL='...']`), etiquetas desconocidas como texto y corrección de anidamientos cruzados.
 
+### Navegación y exportación
+
+- **Esquema del post** en la vista *Outline* y en la barra de navegación, con las secciones (títulos con `[SIZE]` grande, `[HEADING]`, `[B][U]…[/U][/B]`) y los spoilers.
+- **Plegado** de citas, spoilers, código, listas, tablas y de cada sección.
+- **Copiar como HTML** y **Exportar a HTML…** desde la paleta de comandos o el menú contextual del editor.
+- La vista previa se reabre sola al reiniciar VS Code.
+
 ### Escritura
 
 - **Avisos de errores**: subraya las etiquetas sin cerrar, los cierres sin apertura (`[/LIST]` de más), los anidamientos cruzados (`[SIZE][CENTER]…[/SIZE]`) y los `[*]` fuera de una lista.
@@ -70,7 +77,7 @@ Soporte BBCode para VS Code: vista previa compatible con XDA/XenForo y phpBB, av
 
 ### 1.2.0
 
-Vista previa con apariencia de XDA (temas Dark, claro y Classic) y scroll sincronizado, nuevo resaltado de sintaxis, avisos de etiquetas mal cerradas, autocierre con `[/`, atajos `Cmd+B/I/U`, autocompletado de etiquetas y snippets de XDA.
+Vista previa con apariencia de XDA (temas Dark, claro y Classic) y scroll sincronizado, nuevo resaltado de sintaxis, esquema y plegado del post, exportación a HTML, avisos de etiquetas mal cerradas, autocierre con `[/`, atajos `Cmd+B/I/U`, autocompletado de etiquetas y snippets de XDA.
 
 ### 1.1.0
 

@@ -50,7 +50,64 @@ function buildPreviewHtml(webview, document, line) {
     `script-src 'nonce-${nonce}'`
   ].join('; ');
 
-  return buildPage({ ...previewOptions(webview, document), csp, nonce, line });
+  return buildPage({ ...previewOptions(webview, document), csp, nonce, line, uri: document.uri.toString() });
+}
+
+// ---------------------------------------------------------------------------
+// Copiar y exportar a HTML
+// ---------------------------------------------------------------------------
+
+function activeBBCodeDocument() {
+  const editor = vscode.window.activeTextEditor;
+  if (editor && editor.document.languageId === 'bbcode') return editor.document;
+  vscode.window.showInformationMessage('Abre un archivo .bbcode para usar este comando.');
+  return undefined;
+}
+
+function exportBody(document) {
+  const config = vscode.workspace.getConfiguration('bbcode.preview', document.uri);
+  return bbcodeToHtml(document.getText(), {
+    mentionUrl: config.get('mentionUrl'),
+    collapseBlankLines: config.get('xdaLineBreaks', true)
+  });
+}
+
+async function copyHtml() {
+  const document = activeBBCodeDocument();
+  if (!document) return;
+  await vscode.env.clipboard.writeText(exportBody(document));
+  vscode.window.setStatusBarMessage('BBCode: HTML copiado al portapapeles', 3000);
+}
+
+async function exportHtml() {
+  const document = activeBBCodeDocument();
+  if (!document) return;
+  const config = vscode.workspace.getConfiguration('bbcode.preview', document.uri);
+  let theme = config.get('theme', 'xda');
+  // Fuera de VS Code no se sabe si el tema es claro u oscuro: se usa el actual.
+  if (theme === 'xda') {
+    const kind = vscode.window.activeColorTheme.kind;
+    theme = kind === vscode.ColorThemeKind.Light || kind === vscode.ColorThemeKind.HighContrastLight ? 'xda-light' : 'xda-dark';
+  }
+
+  const target = await vscode.window.showSaveDialog({
+    defaultUri: vscode.Uri.file(document.uri.fsPath.replace(/\.bbcode$/i, '') + '.html'),
+    filters: { HTML: ['html'] },
+    saveLabel: 'Exportar'
+  });
+  if (!target) return;
+
+  const html = buildPage({
+    body: exportBody(document),
+    csp: "default-src 'none'; img-src https: http: data: file:; style-src 'unsafe-inline'",
+    theme,
+    title: path.basename(document.fileName).replace(/\.bbcode$/i, ''),
+    author: os.userInfo().username
+  });
+  await vscode.workspace.fs.writeFile(target, Buffer.from(html, 'utf8'));
+
+  const open = await vscode.window.showInformationMessage(`Exportado: ${path.basename(target.fsPath)}`, 'Abrir en el navegador');
+  if (open) vscode.env.openExternal(target);
 }
 
 const THEME_LABELS = {
@@ -110,26 +167,45 @@ class PreviewManager {
 
   show(document) {
     if (!this.panel) {
-      this.panel = vscode.window.createWebviewPanel(
+      this.attach(vscode.window.createWebviewPanel(
         'bbcodePreview',
         'BBCode Preview',
         { viewColumn: vscode.ViewColumn.Beside, preserveFocus: true },
         { enableScripts: true, enableFindWidget: true }
-      );
-      this.panel.iconPath = vscode.Uri.joinPath(this.extensionUri, 'images', 'icon.png');
-      this.panel.webview.onDidReceiveMessage((message) => this.onMessage(message));
-      this.panel.onDidDispose(() => {
-        this.panel = undefined;
-        this.document = undefined;
-        clearTimeout(this.timer);
-      });
+      ));
     } else {
       this.panel.reveal(vscode.ViewColumn.Beside, true);
     }
     this.setDocument(document);
   }
 
-  setDocument(document) {
+  /**
+   * Reabre la vista previa que estaba abierta al cerrar VS Code.
+   */
+  async restore(panel, state) {
+    try {
+      const document = await vscode.workspace.openTextDocument(vscode.Uri.parse(state.uri));
+      if (this.panel) this.panel.dispose();
+      this.attach(panel);
+      this.setDocument(document, state.line);
+    } catch {
+      panel.dispose();
+    }
+  }
+
+  attach(panel) {
+    this.panel = panel;
+    panel.iconPath = vscode.Uri.joinPath(this.extensionUri, 'images', 'icon.png');
+    panel.webview.onDidReceiveMessage((message) => this.onMessage(message));
+    panel.onDidDispose(() => {
+      if (this.panel !== panel) return;
+      this.panel = undefined;
+      this.document = undefined;
+      clearTimeout(this.timer);
+    });
+  }
+
+  setDocument(document, line) {
     this.document = document;
     const docFolder = vscode.Uri.file(path.dirname(document.uri.fsPath));
     const workspaceFolders = (vscode.workspace.workspaceFolders || []).map((folder) => folder.uri);
@@ -138,7 +214,8 @@ class PreviewManager {
       localResourceRoots: [docFolder, ...workspaceFolders]
     };
     this.panel.title = `Preview ${path.basename(document.fileName)}`;
-    this.panel.webview.html = buildPreviewHtml(this.panel.webview, document, topLine(editorFor(document)));
+    const startLine = line !== undefined ? line : topLine(editorFor(document));
+    this.panel.webview.html = buildPreviewHtml(this.panel.webview, document, startLine);
   }
 
   scheduleUpdate() {
@@ -204,7 +281,15 @@ function activate(context) {
   context.subscriptions.push(
     previewCommand,
     manager,
-    vscode.commands.registerCommand('bbcode.preview.changeTheme', changeTheme)
+    vscode.commands.registerCommand('bbcode.preview.changeTheme', changeTheme),
+    vscode.commands.registerCommand('bbcode.copyHtml', copyHtml),
+    vscode.commands.registerCommand('bbcode.exportHtml', exportHtml),
+    vscode.window.registerWebviewPanelSerializer('bbcodePreview', {
+      deserializeWebviewPanel: async (panel, state) => {
+        if (state && state.uri) await manager.restore(panel, state);
+        else panel.dispose();
+      }
+    })
   );
   registerEditorFeatures(context);
 }
