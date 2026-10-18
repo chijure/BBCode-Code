@@ -59,7 +59,6 @@ Soporte BBCode para VS Code: vista previa compatible con XDA/XenForo y phpBB, av
 - `bbcode.tagCase` (`auto`): mayúsculas (`upper`, estilo XDA) o minúsculas (`lower`, estilo phpBB) en las etiquetas que inserta la extensión; `auto` usa el estilo que predomina en el documento.
 - `bbcode.preview.theme` (`xda`): estilo de la vista previa: `xda` (oscuro o claro según VS Code), `xda-dark`, `xda-light`, `xda-classic` o `vscode` (solo el contenido con los colores del editor).
 - `bbcode.preview.xdaLineBreaks` (`true`): muestra los saltos como los deja el editor de XDA, donde una línea en blanco entre párrafos queda como un solo salto.
-- `bbcode.preview.author`, `bbcode.preview.userTitle`, `bbcode.preview.avatarUrl`: nombre, título y avatar que se muestran en el post.
 - `bbcode.preview.mentionUrl`: URL para `[MENTION=id]`/`[USER=id]` (`{id}` se reemplaza). Por defecto apunta a los perfiles de XDA.
 
 ## Problemas conocidos

@@ -39,9 +39,7 @@ function buildPreviewHtml(webview, document) {
     csp,
     theme,
     title: path.basename(document.fileName).replace(/\.bbcode$/i, ''),
-    author: config.get('author') || os.userInfo().username,
-    userTitle: config.get('userTitle', 'Senior Member'),
-    avatarUrl: config.get('avatarUrl', '')
+    author: os.userInfo().username
   });
 }
 

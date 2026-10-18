@@ -199,9 +199,7 @@ const STYLES = `
     display: flex; align-items: center; justify-content: center;
     background: var(--accent); color: #fff;
     font-size: 58px; line-height: 1;
-    overflow: hidden;
   }
-  .avatar img { width: 100%; height: 100%; object-fit: cover; }
   .username { font-weight: 700; color: var(--link); }
   .user-title { font-size: 12px; }
   .post-main { flex: 1; min-width: 0; padding: 15px; }
@@ -296,19 +294,15 @@ const STYLES = `
 `;
 
 /**
- * @param {{ body: string, csp: string, theme?: string, title?: string, author?: string,
- *           userTitle?: string, avatarUrl?: string, date?: Date }} options
+ * @param {{ body: string, csp: string, theme?: string, title?: string, author?: string, date?: Date }} options
  */
-function buildPage({ body, csp, theme = 'xda', title = '', author = '', userTitle = 'Senior Member', avatarUrl = '', date = new Date() }) {
+function buildPage({ body, csp, theme = 'xda', title = '', author = '', date = new Date() }) {
   const themeName = THEMES.includes(theme) ? theme : 'xda';
   let content = body;
 
   if (themeName !== 'vscode') {
     const name = author || 'Autor';
     const shownDate = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    const avatar = avatarUrl
-      ? `<div class="avatar"><img src="${escapeHtml(avatarUrl)}" alt="${escapeHtml(name)}" width="96" height="96"></div>`
-      : `<div class="avatar">${escapeHtml(name.charAt(0).toUpperCase())}</div>`;
     content = `
       <div class="thread-header">
         <h1 class="thread-title">${escapeHtml(title)}</h1>
@@ -316,10 +310,10 @@ function buildPage({ body, csp, theme = 'xda', title = '', author = '', userTitl
       </div>
       <article class="post">
         <div class="post-user">
-          ${avatar}
+          <div class="avatar">${escapeHtml(name.charAt(0).toUpperCase())}</div>
           <div>
             <div class="username">${escapeHtml(name)}</div>
-            <div class="user-title">${escapeHtml(userTitle)}</div>
+            <div class="user-title">Senior Member</div>
           </div>
         </div>
         <div class="post-main">

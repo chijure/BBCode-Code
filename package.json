@@ -163,21 +163,6 @@
           "type": "boolean",
           "default": true,
           "markdownDescription": "Muestra los saltos de línea como los deja el editor de XDA: una línea en blanco entre párrafos se convierte en un solo salto. No aplica al estilo `vscode`."
-        },
-        "bbcode.preview.author": {
-          "type": "string",
-          "default": "",
-          "description": "Nombre de usuario que se muestra en el post. Vacío usa el usuario del sistema."
-        },
-        "bbcode.preview.userTitle": {
-          "type": "string",
-          "default": "Senior Member",
-          "description": "Título del usuario debajo del nombre (por ejemplo Senior Member o Recognized Developer)."
-        },
-        "bbcode.preview.avatarUrl": {
-          "type": "string",
-          "default": "",
-          "description": "URL de la imagen de avatar. Vacío muestra la inicial del nombre."
         }
       }
     },
